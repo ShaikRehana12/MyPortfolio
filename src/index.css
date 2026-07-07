@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Core Global Styles
+   ========================================================================== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Default: Light Mode Canvas */
+  @apply bg-white text-slate-900 transition-colors duration-300;
+}
+
+/* Dark Mode Overrides */
+.dark body {
+  @apply bg-[#020408] text-slate-100;
+}
+
+/* ==========================================================================
+   Elite Architectural Color Tokens
+   ========================================================================== */
+:root {
+  --accent-cyan: #06b6d4;
+  --accent-glow: rgba(6, 182, 212, 0.25);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+}
+
+.dark {
+  --glass-bg: rgba(2, 4, 8, 0.7);
+}
+
+/* ==========================================================================
+   Premium Effects & Animations
+   ========================================================================== */
+.tech-symbol-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tech-symbol-hover:hover {
+  transform: translateY(-2px) scale(1.03);
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 10px 30px -5px var(--accent-glow);
+}
+
+.glow-text-hover {
+  transition: text-shadow 0.3s ease, color 0.3s ease;
+}
+.glow-text-hover:hover {
+  color: var(--accent-cyan) !important;
+  text-shadow: 0 0 15px var(--accent-glow);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ==========================================================================
+   Typography Overrides
+   ========================================================================== */
+/* Wrapped in :where() so these base-layer defaults have ZERO specificity,
+   meaning any Tailwind utility class (e.g. text-white, font-black) placed
+   on an element will always win, in light or dark mode. Without :where(),
+   ".dark h1/p" (2 classes) can out-specificity a single utility class
+   like ".text-white" (1 class), silently overriding it. */
+:where(h1, h2, h3, h4) {
+  @apply text-slate-900 dark:text-white font-bold tracking-tight;
+}
+
+:where(p) {
+  @apply text-slate-600 dark:text-slate-400;
+}
+
+/* Custom Cyan Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { 
+  @apply bg-white dark:bg-[#020408]; 
+}
+::-webkit-scrollbar-thumb { 
+  @apply bg-slate-200 dark:bg-[#1e293b] rounded-full; 
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: var(--accent-cyan); 
+}
+/* Move all your animation keyframes here */
+@keyframes textShineSweep {
+  to { background-position: 200% center; }
+}
+
+@keyframes loopingShine {
+  0% { transform: translateX(-150%) skewX(-25deg); }
+  50%, 100% { transform: translateX(250%) skewX(-25deg); }
+}
+
+@keyframes sparkScale {
+  0% { transform: scale(0); opacity: 0; }
+  15% { transform: scale(1.25); opacity: 1; }
+  80% { transform: scale(1); opacity: 0.85; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+/* ... and so on for all other keyframes ... */
+
+/* Optionally, you can define standard class names if you use these animations elsewhere */
+.animate-text-shine {
+  animation: textShineSweep 4s linear infinite;
+}
