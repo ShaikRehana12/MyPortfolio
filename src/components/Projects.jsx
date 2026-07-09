@@ -1,105 +1,243 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-export default function Projects() {
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const modules = [
+const PROJECTS = {
+  current: {
+    name: "Prompt2Project",
+    type: "AI-Driven Scaffold Generator",
+    tech: ["Spring Boot", "Java", "AI/ML Integration", "Maven", "REST APIs"],
+    points: [
+      "Building an intelligent engine that automatically generates full-stack project structures from simple user prompts.",
+      "Implementing deep integration with LLM APIs to interpret developer intent into functional, production-ready codebases.",
+      "Developing robust Spring Boot backend services to manage file system operations and dependency injection.",
+      "Ensuring clean, modular code generation adhering to industry-standard architecture patterns.",
+      "Architecting scalable API endpoints to handle high-frequency AI prompt requests with low latency.",
+      "Optimizing dependency management systems for rapid integration of third-party libraries.",
+     // "Designing a user-friendly interface that streamlines the developer workflow from prototype to deployment.",
+     // "Writing comprehensive unit tests to ensure code reliability and security across generated project modules."
+    ]
+  },
+  past: [
     {
       name: "SportsConnect",
-      type: "Online Sports Tournament Platform",
-      badge: "MERN Architecture",
-      tech: ["MongoDB", "Express.js", "React.js", "Node.js", "JWT Engine", "RBAC Access"],
+      type: "Tournament Platform",
+      tech: ["MongoDB", "Express.js", "React.js", "Node.js"],
       points: [
-        "Engineered a production tournament hub supporting geospatial queries and dynamic tournament brackets generation patterns.",
-        "Configured security gates via structured JSON Web Token authentication combined with granular Role-Based Access Controls.",
-        "Optimized Express middleware routes to guarantee fast database record updates and smooth operational runtime loops."
+        "Engineered a production-level tournament hub supporting geospatial queries and dynamic bracket generation.",
+        "Configured secure JSON Web Token authentication with granular Role-Based Access Controls.",
+        "Optimized Express middleware routes to guarantee fast database record updates and smooth runtime loops.",
+        "Implemented real-time match scheduling algorithms that reduced administrative overhead by 40%.",
+        "Integrated AWS S3 for secure, high-speed media storage of user-uploaded tournament highlights.",
+        "Developed custom RESTful API architecture following clean code and SOLID principles.",
+       "Applied Redis caching layers to drastically minimize database query response times.",
+        "Built a fully responsive dashboard compatible with all modern mobile and desktop browsers."
       ]
     },
     {
-      name: "Secure IoT Blockchain Sharing Engine",
-      type: "Data Architecture & Crypto Security",
-      badge: "Java Enterprise",
-      tech: ["Enterprise Java", "JSP View Engine", "MySQL", "Proxy Re-Encryption", "Blockchain Core", "JUnit Frameworks"],
+      name: "Secure IoT Blockchain Engine",
+      type: "Data Architecture & Security",
+      tech: ["Java", "MySQL", "Blockchain", "JUnit"],
       points: [
         "Crafted telemetry distribution channels leveraging Java servlet controllers paired with optimized relational database setups.",
-        "Applied cryptographic Proxy Re-Encryption configurations on top of blockchain ledgers to safeguard device endpoints data.",
-        "Maintained robust coverage requirements and verification pipelines using written JUnit automated scripts."
+        "Applied cryptographic Proxy Re-Encryption on blockchain ledgers to safeguard device endpoint data.",
+        "Maintained robust test coverage requirements and verification pipelines using written JUnit automated scripts.",
+        "Designed a decentralized consensus mechanism to ensure immutable data integrity across distributed network nodes.",
+        "Architected secure handshake protocols to effectively prevent man-in-the-middle attacks in IoT environments.",
+        "Utilized Spring Boot microservices to decouple data processing from the primary UI thread.",
+        //"Implemented comprehensive system logging and monitoring using the ELK stack for rapid debugging.",
+        //"Optimized MySQL schema indexing to handle high-velocity sensor data ingestion without performance bottlenecks."
       ]
     }
-  ];
+  ]
+};
+
+// Fixed palette so every tech tag gets its own color, deterministic by name
+// (same tag = same color everywhere), instead of one flat color for all.
+const TECH_PALETTE = [
+  { text: "#67e8f9", bg: "rgba(6,182,212,0.15)", border: "rgba(6,182,212,0.5)" },   // cyan
+  { text: "#c4b5fd", bg: "rgba(139,92,246,0.15)", border: "rgba(139,92,246,0.5)" }, // violet
+  { text: "#fcd34d", bg: "rgba(245,158,11,0.15)", border: "rgba(245,158,11,0.5)" }, // amber
+  { text: "#f9a8d4", bg: "rgba(236,72,153,0.15)", border: "rgba(236,72,153,0.5)" }, // pink
+  { text: "#6ee7b7", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.5)" }, // emerald
+  { text: "#93c5fd", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.5)" }, // blue
+];
+
+function techColor(name) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return TECH_PALETTE[Math.abs(hash) % TECH_PALETTE.length];
+}
+
+// Fixed set of twinkling stars/sparks scattered across the card — deterministic
+// positions so they don't jump around on re-render.
+const STARS = [
+  { top: '6%', left: '8%', size: 6, delay: '0s', color: '#67e8f9' },
+  { top: '14%', left: '92%', size: 4, delay: '0.6s', color: '#ffffff' },
+  { top: '28%', left: '48%', size: 3, delay: '1.2s', color: '#c4b5fd' },
+  { top: '40%', left: '4%', size: 5, delay: '0.3s', color: '#fcd34d' },
+  { top: '55%', left: '88%', size: 4, delay: '1.6s', color: '#67e8f9' },
+  { top: '68%', left: '18%', size: 3, delay: '2.1s', color: '#ffffff' },
+  { top: '78%', left: '95%', size: 5, delay: '0.9s', color: '#f9a8d4' },
+  { top: '85%', left: '35%', size: 4, delay: '1.4s', color: '#6ee7b7' },
+  { top: '10%', left: '65%', size: 3, delay: '1.9s', color: '#93c5fd' },
+  { top: '92%', left: '70%', size: 4, delay: '0.2s', color: '#67e8f9' },
+  { top: '48%', left: '96%', size: 3, delay: '2.4s', color: '#ffffff' },
+  { top: '35%', left: '22%', size: 3, delay: '1.1s', color: '#fcd34d' },
+];
+
+function Sparks() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {STARS.map((s, i) => (
+        <span
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            top: s.top,
+            left: s.left,
+            width: s.size,
+            height: s.size,
+            backgroundColor: s.color,
+            boxShadow: `0 0 6px 1px ${s.color}`,
+            animation: `sparkScale 2.6s ease-in-out ${s.delay} infinite`
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+export default function Projects() {
+  const [index, setIndex] = useState(0);
+  const [animKey, setAnimKey] = useState(0);
+  const allProjects = [PROJECTS.current, ...PROJECTS.past];
+  const timerRef = useRef(null);
+
+  const goTo = (i) => {
+    setIndex(i);
+    setAnimKey((k) => k + 1);
+  };
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveIndex((prevIndex) => (prevIndex + 1) % modules.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [modules.length]);
+    timerRef.current = setInterval(() => {
+      setIndex((prev) => (prev + 1) % allProjects.length);
+      setAnimKey((k) => k + 1);
+    }, 5000);
+    return () => clearInterval(timerRef.current);
+  }, [allProjects.length]);
+
+  const proj = allProjects[index];
 
   return (
-    <section className="animate-fadeIn text-left max-w-2xl mx-auto py-4">
-      <div className="mb-10 text-center">
-        <h2 className="m-0 text-3xl font-black text-white tracking-tight">Software Portals</h2>
-        <p className="m-0 text-sm text-slate-500 mt-1">Interactive live slider showing core applications code.</p>
-      </div>
+    <section className="w-full py-16 px-6 md:px-12">
+      <style>{`
+        @keyframes zoomFadeIn {
+          0% { opacity: 0; transform: scale(0.92) translateY(16px); filter: blur(6px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+        .project-slide {
+          animation: zoomFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes lineReveal {
+          from { opacity: 0; transform: translateX(-10px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .point-line {
+          opacity: 0;
+          animation: lineReveal 0.5s ease-out forwards;
+        }
+      `}</style>
 
-      <div className="relative min-h-[400px] border border-slate-900 bg-slate-950/40 backdrop-blur-sm rounded-3xl p-6 md:p-8 flex flex-col justify-between transition-all duration-300 shadow-2xl">
-        
-        <div className="transition-all duration-500 ease-in-out transform">
-          <div className="flex justify-between items-start gap-4 mb-3">
-            <div>
-              <h3 className="m-0 text-2xl font-black text-white tracking-tight">
-                {modules[activeIndex].name}
-              </h3>
-              <p className="m-0 text-xs font-semibold text-[#06b6d4] font-mono mt-1 italic">
-                {modules[activeIndex].type}
-              </p>
-            </div>
-            <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#06b6d4] bg-[#06b6d4]/10 border border-[#06b6d4]/20 px-3 py-1 rounded-full whitespace-nowrap">
-              {modules[activeIndex].badge}
-            </span>
-          </div>
+      {/* Software Projects */}
 
-          <ul className="text-sm text-slate-400 space-y-3.5 pl-0 list-none mt-6 border-t border-slate-900 pt-6">
-            {modules[activeIndex].points.map((pt, idx) => (
-              <li key={idx} className="relative pl-5 before:content-['▪'] before:absolute before:left-0 before:text-[#06b6d4]/70 leading-relaxed">
-                {pt}
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="max-w-7xl mx-auto">
+        <div
+          key={animKey}
+          className="project-slide relative bg-white/5 backdrop-blur-lg border border-slate-700 rounded-3xl p-10 shadow-2xl min-h-[550px] overflow-hidden"
+        >
+          <Sparks />
 
-        <div className="mt-8">
-          <div className="flex flex-wrap gap-1.5 pb-5 border-b border-slate-900">
-            {modules[activeIndex].tech.map((tag, idx) => (
-              <span key={idx} className="text-[10px] font-mono font-bold text-slate-200 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-md">
-                {tag}
+          {/* Currently Building Indicator */}
+          {index === 0 && (
+            <div className="relative flex items-center gap-2 mb-6">
+              <span className="w-3 h-3 bg-cyan-400 rounded-full animate-pulse"></span>
+              <span
+                className="font-bold uppercase tracking-widest text-xs"
+                style={{ color: '#22d3ee' }}
+              >
+                Currently Building
               </span>
-            ))}
-          </div>
-
-          <div className="flex justify-between items-center pt-4">
-            <div className="flex gap-2">
-              {modules.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveIndex(i)}
-                  className={`h-1.5 rounded-full cursor-pointer transition-all duration-300 border-none ${
-                    activeIndex === i ? 'w-6 bg-[#06b6d4]' : 'w-2 bg-slate-800 hover:bg-slate-700'
-                  }`}
-                  aria-label={`Go to slide ${i + 1}`}
-                />
-              ))}
             </div>
-            
-            <button
-              onClick={() => setActiveIndex((prev) => (prev + 1) % modules.length)}
-              className="text-xs font-mono font-bold tracking-wider text-[#06b6d4] bg-[#06b6d4]/5 hover:bg-[#06b6d4]/10 border border-[#06b6d4]/20 px-4 py-2 rounded-xl cursor-pointer transition-colors duration-200"
-            >
-              Next Project →
-            </button>
+          )}
+
+          <div className="relative grid md:grid-cols-[420px_1fr] gap-12">
+            {/* LEFT: title (big) + tech stack */}
+            <div className="flex flex-col md:border-r border-slate-700/60 md:pr-10 min-w-0">
+              <h4
+                className="text-3xl md:text-4xl font-extrabold mb-3 leading-snug"
+                style={{
+                  backgroundImage: 'linear-gradient(90deg, #22d3ee, #ffffff, #22d3ee)',
+                  backgroundSize: '200% auto',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  color: '#67e8f9',
+                  WebkitTextFillColor: 'transparent',
+                  animation: 'textShineSweep 5s linear infinite'
+                }}
+              >
+                {proj.name}
+              </h4>
+              <p
+                className="font-extrabold mb-8 text-sm uppercase tracking-wider"
+                style={{ color: '#fbbf24', textShadow: '0 0 12px rgba(251,191,36,0.35)' }}
+              >
+                {proj.type}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {proj.tech.map((t, i) => {
+                  const c = techColor(t);
+                  return (
+                    <span
+                      key={i}
+                      className="text-xs font-bold px-3 py-1.5 rounded-full border"
+                      style={{ color: c.text, backgroundColor: c.bg, borderColor: c.border }}
+                    >
+                      {t}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* RIGHT: points */}
+            <ul className="space-y-3 overflow-y-auto max-h-[460px] pr-2">
+              {proj.points.map((pt, i) => (
+                <li
+                  key={i}
+                  className="point-line text-base font-medium !text-white flex gap-3"
+                  style={{ animationDelay: `${0.15 + i * 0.08}s` }}
+                >
+                  <span className="text-cyan-400 mt-1 shrink-0">●</span> {pt}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
+        {/* Navigation dots */}
+        <div className="flex items-center justify-center gap-2 mt-6">
+          {allProjects.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Show project ${i + 1}`}
+              className="h-2 rounded-full transition-all duration-300"
+              style={{
+                width: i === index ? '28px' : '8px',
+                backgroundColor: i === index ? '#22d3ee' : 'rgba(148,163,184,0.4)'
+              }}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -15,11 +15,15 @@ const PATH_STEPS = [
 // Photo carousel — add more image paths here any time; the carousel adapts automatically.
 const PHOTOS = ['/rehana.png'];
 
+// Path to the resume file used for both the inline preview and the download link.
+const RESUME_PATH = '/resume.pdf';
+
 export default function Hero({ setActiveTab }) {
   const [magicStars, setMagicStars] = useState([]);
   const [roleIndex, setRoleIndex] = useState(0);
   const [roleVisible, setRoleVisible] = useState(true);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [showResume, setShowResume] = useState(false);
 
   useEffect(() => {
     const stars = Array.from({ length: 30 }).map((_, i) => ({
@@ -52,6 +56,21 @@ export default function Hero({ setActiveTab }) {
     return () => clearInterval(interval);
   }, []);
 
+  // Lock page scroll and allow Escape to close while the resume preview is open.
+  useEffect(() => {
+    if (!showResume) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setShowResume(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [showResume]);
+
   return (
     <section className="relative text-left py-16 lg:py-24 overflow-hidden">
 
@@ -71,7 +90,7 @@ export default function Hero({ setActiveTab }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 px-6 md:px-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 pl-6 md:pl-12 pr-6 md:pr-12 lg:pr-0">
 
         {/* LEFT: Content */}
         <div className="lg:col-span-7 flex flex-col items-start gap-8">
@@ -166,14 +185,17 @@ export default function Hero({ setActiveTab }) {
               See What I've Built
             </button>
             <button
+              onClick={() => setShowResume(true)}
               className="px-10 py-4 font-black text-sm uppercase tracking-widest rounded-full border-2 border-white text-white transition-all hover:bg-white hover:text-slate-950"
             >
-              Download Resume
+              Show Resume
             </button>
           </div>
         </div>
 
-        {/* RIGHT: Photo carousel — crossfades between images, with dot indicators */}
+        {/* RIGHT: Photo carousel — grid column keeps justify-end, and the container above
+            has zero right padding on large screens, so this sits flush against the true
+            right edge of the window without any negative margin or absolute positioning. */}
         <div className="lg:col-span-5 flex justify-center lg:justify-end">
           <div className="relative w-80 h-96 rounded-3xl overflow-hidden border-4 border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.3)] group">
             {PHOTOS.map((src, i) => (
@@ -209,6 +231,52 @@ export default function Hero({ setActiveTab }) {
           </div>
         </div>
       </div>
+
+      {/* RESUME PREVIEW MODAL */}
+      {showResume && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-slate-950/80 backdrop-blur-sm animate-[blurFadeIn_0.25s_ease_forwards]"
+          onClick={() => setShowResume(false)}
+        >
+          <div
+            className="relative w-full max-w-3xl h-[85vh] rounded-2xl overflow-hidden border-2 border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.35)] bg-slate-900"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header bar */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-cyan-500/20 bg-slate-950/60">
+              <span
+                className="text-sm md:text-base uppercase tracking-widest text-cyan-300 font-black"
+                style={{ fontFamily: "'Playfair Display', 'Cinzel', 'Georgia', serif" }}
+              >
+                Resume Preview
+              </span>
+              <div className="flex items-center gap-3">
+                <a
+                  href={RESUME_PATH}
+                  download
+                  className="px-4 py-2 text-xs font-black uppercase tracking-widest rounded-full bg-cyan-500 text-slate-950 transition-all hover:bg-white hover:scale-105"
+                >
+                  Download
+                </a>
+                <button
+                  onClick={() => setShowResume(false)}
+                  aria-label="Close resume preview"
+                  className="w-9 h-9 flex items-center justify-center rounded-full border-2 border-white/40 text-white transition-all hover:bg-white hover:text-slate-950"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* PDF preview */}
+            <iframe
+              src={RESUME_PATH}
+              title="Resume Preview"
+              className="w-full h-[calc(100%-56px)] bg-white"
+            />
+          </div>
+        </div>
+      )}
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Cinzel:wght@700&display=swap');

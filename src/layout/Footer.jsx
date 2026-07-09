@@ -4,8 +4,8 @@ const CONTACT = {
   email: 'shaikrehanaofficial12@gmail.com',
   phone: '+91 91103 91388',
   location: 'Guntur, Andhra Pradesh',
-  linkedin: '#', // TODO: replace with your actual LinkedIn profile URL
-  github: '#',   // TODO: replace with your actual GitHub profile URL
+  linkedin: 'https://www.linkedin.com/in/shaik-rehana-abb5892a4',
+  github: 'https://github.com/ShaikRehana12',
 };
 
 const QUICK_LINKS = [
@@ -47,60 +47,60 @@ export default function Footer({ setActiveTab }) {
     <footer className="relative border-t border-cyan-500/20 bg-[#020408] overflow-hidden">
 
       {/* faint ambient glow, echoes the hero without competing with it */}
-      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[400px] h-[180px] bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12 py-16 grid grid-cols-1 md:grid-cols-12 gap-12">
+      <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-8 py-8 grid grid-cols-1 md:grid-cols-12 gap-6">
 
         {/* About */}
-        <div className="md:col-span-5 flex flex-col gap-4">
+        <div className="md:col-span-5 flex flex-col gap-2.5">
           <h3
-            className="text-2xl"
+            className="text-lg"
             style={{ color: '#ffffff', fontWeight: 700, fontFamily: "'Playfair Display', 'Cinzel', 'Georgia', serif", letterSpacing: '0.04em' }}
           >
             Shaik Rehana
           </h3>
-          <p className="text-sm md:text-base leading-relaxed text-slate-300 max-w-sm" style={{ fontWeight: 500 }}>
+          <p className="text-xs md:text-sm leading-relaxed text-slate-300 max-w-sm" style={{ fontWeight: 500 }}>
             Java Full Stack Developer mentoring the next wave of engineers while building
             production-grade systems of my own &mdash; one clean commit at a time.
           </p>
-          <div className="flex items-center gap-3 mt-2">
+          <div className="flex items-center gap-2 mt-1">
             <a
               href={`mailto:${CONTACT.email}`}
               aria-label="Email"
-              className="tech-symbol-hover w-11 h-11 rounded-full border border-cyan-400/40 bg-cyan-500/10 flex items-center justify-center text-cyan-300"
+              className="tech-symbol-hover w-8 h-8 rounded-full border border-cyan-400/40 bg-cyan-500/10 flex items-center justify-center text-cyan-300"
             >
-              <MailIcon className="w-5 h-5" />
+              <MailIcon className="w-3.5 h-3.5" />
             </a>
             <a
               href={CONTACT.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
-              className="tech-symbol-hover w-11 h-11 rounded-full border border-cyan-400/40 bg-cyan-500/10 flex items-center justify-center text-cyan-300"
+              className="tech-symbol-hover w-8 h-8 rounded-full border border-cyan-400/40 bg-cyan-500/10 flex items-center justify-center text-cyan-300"
             >
-              <LinkedInIcon className="w-5 h-5" />
+              <LinkedInIcon className="w-3.5 h-3.5" />
             </a>
             <a
               href={CONTACT.github}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
-              className="tech-symbol-hover w-11 h-11 rounded-full border border-cyan-400/40 bg-cyan-500/10 flex items-center justify-center text-cyan-300"
+              className="tech-symbol-hover w-8 h-8 rounded-full border border-cyan-400/40 bg-cyan-500/10 flex items-center justify-center text-cyan-300"
             >
-              <GitHubIcon className="w-5 h-5" />
+              <GitHubIcon className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
 
         {/* Quick links */}
-        <div className="md:col-span-3 flex flex-col gap-4">
-          <span className="text-xs uppercase tracking-[0.2em] text-cyan-300 font-black">Navigate</span>
-          <div className="flex flex-col gap-2">
+        <div className="md:col-span-3 flex flex-col gap-2.5">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-cyan-300 font-black">Navigate</span>
+          <div className="flex flex-col gap-1.5">
             {QUICK_LINKS.map((link) => (
               <button
                 key={link.tab}
                 onClick={() => setActiveTab && setActiveTab(link.tab)}
-                className="glow-text-hover text-left text-sm text-slate-300 w-fit"
+                className="glow-text-hover text-left text-xs md:text-sm text-slate-300 w-fit"
                 style={{ fontWeight: 600 }}
               >
                 {link.label}
@@ -110,9 +110,9 @@ export default function Footer({ setActiveTab }) {
         </div>
 
         {/* Contact details */}
-        <div className="md:col-span-4 flex flex-col gap-4">
-          <span className="text-xs uppercase tracking-[0.2em] text-cyan-300 font-black">Get in Touch</span>
-          <div className="flex flex-col gap-2 text-sm text-slate-300" style={{ fontWeight: 500 }}>
+        <div className="md:col-span-4 flex flex-col gap-2.5">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-cyan-300 font-black">Get in Touch</span>
+          <div className="flex flex-col gap-1.5 text-xs md:text-sm text-slate-300" style={{ fontWeight: 500 }}>
             <a href={`mailto:${CONTACT.email}`} className="glow-text-hover w-fit break-all">
               {CONTACT.email}
             </a>
@@ -125,11 +125,11 @@ export default function Footer({ setActiveTab }) {
       </div>
 
       <div className="relative z-10 border-t border-cyan-500/10">
-        <div className="max-w-6xl mx-auto px-6 md:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-slate-500">
+        <div className="max-w-4xl mx-auto px-6 md:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-1.5">
+          <p className="text-[11px] text-slate-500">
             &copy; {year} Shaik Rehana. All rights reserved.
           </p>
-          <p className="text-xs text-slate-500">
+          <p className="text-[11px] text-slate-500">
             Built with React &amp; Tailwind CSS.
           </p>
         </div>
