@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Core Global Styles
+   Core Global Styles (Forced Permanent Dark Mode)
    ========================================================================== */
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
@@ -14,13 +15,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  /* Default: Light Mode Canvas */
-  @apply bg-white text-slate-900 transition-colors duration-300;
-}
-
-/* Dark Mode Overrides */
-.dark body {
-  @apply bg-[#020408] text-slate-100;
+  /* Permanently forced dark background and text */
+  background-color: #020408;
+  color: #f1f5f9;
 }
 
 /* ==========================================================================
@@ -29,10 +26,6 @@ body {
 :root {
   --accent-cyan: #06b6d4;
   --accent-glow: rgba(6, 182, 212, 0.25);
-  --glass-bg: rgba(255, 255, 255, 0.7);
-}
-
-.dark {
   --glass-bg: rgba(2, 4, 8, 0.7);
 }
 
@@ -68,31 +61,29 @@ body {
 /* ==========================================================================
    Typography Overrides
    ========================================================================== */
-/* Wrapped in :where() so these base-layer defaults have ZERO specificity,
-   meaning any Tailwind utility class (e.g. text-white, font-black) placed
-   on an element will always win, in light or dark mode. Without :where(),
-   ".dark h1/p" (2 classes) can out-specificity a single utility class
-   like ".text-white" (1 class), silently overriding it. */
 :where(h1, h2, h3, h4) {
-  @apply text-slate-900 dark:text-white font-bold tracking-tight;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 :where(p) {
-  @apply text-slate-600 dark:text-slate-400;
+  color: #94a3b8;
 }
 
 /* Custom Cyan Scrollbar */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { 
-  @apply bg-white dark:bg-[#020408]; 
+  background-color: #020408; 
 }
 ::-webkit-scrollbar-thumb { 
-  @apply bg-slate-200 dark:bg-[#1e293b] rounded-full; 
+  background-color: #1e293b; 
+  border-radius: 9999px; 
 }
 ::-webkit-scrollbar-thumb:hover { 
   background: var(--accent-cyan); 
 }
-/* Move all your animation keyframes here */
+
 @keyframes textShineSweep {
   to { background-position: 200% center; }
 }
@@ -109,9 +100,6 @@ body {
   100% { transform: scale(0.8); opacity: 0; }
 }
 
-/* ... and so on for all other keyframes ... */
-
-/* Optionally, you can define standard class names if you use these animations elsewhere */
 .animate-text-shine {
   animation: textShineSweep 4s linear infinite;
 }
